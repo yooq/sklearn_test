@@ -10,8 +10,6 @@ class CBOW:
         self.model = self.get_train_data(input_file)
 
     def get_train_data(self,input_file,L=10):
-
-
         if not os.path.exists(input_file):
             return
         score_thr = 4.0
@@ -20,23 +18,17 @@ class CBOW:
         ratingsDF = ratingsDF[ratingsDF['rating']>score_thr]
         ratingsDF['movie_id'] = ratingsDF['movie_id'].apply(str)
         movie_list = ratingsDF.groupby('user_id')['movie_id'].apply(list).values
-
-
         if not os.path.exists('./item2vec'):
             model = Word2Vec(movie_list, size=L, window=5, sg=0, hs=0, min_count=1, workers=multiprocessing.cpu_count(),iter=10)
-
-
             model.save('./item2vec')
             return model
         else:
             model = Word2Vec.load('./item2vec')
             return model
-
-
     def recommend(self,movieID,K):
         movieID = str(movieID)
         rank = self.model.most_similar(movieID,topn=K)
-        print('???????????',self.model['1193'])
+        print('1913-->',self.model['1193'])
         return rank
 
 if __name__ == '__main__':
