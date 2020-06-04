@@ -5,7 +5,7 @@ import math
 import os
 from operator import itemgetter
 from collections import defaultdict
-
+import numpy as np
 random.seed(0)
 
 '''有新物品加入时，调用该算法'''
@@ -17,34 +17,26 @@ class UserBasedCF(object):
         self.user_sim_mat = {}
         self.product_popular = {}
         self.product_count = 0
-        print ('Similar user number = %d' % self.n_sim_user, file=sys.stderr)
-        print ('recommended product number = %d' %
-               self.n_rec_product, file=sys.stderr)
 
+        self.max_point = 0.0
+        self.min_point = 10.0
     @staticmethod
     def loadfile(filename):
         ''' 读取数据'''
         fp = open(filename, 'r')
         for i, line in enumerate(fp):
             yield line.strip('\r\n')
-            if i % 100000 == 0:
-                print ('loading %s(%s)' % (filename, i), file=sys.stderr)
         fp.close()
-        print ('load %s succ' % filename, file=sys.stderr)
 
     def generate_dataset(self, filename):
         for i,line in enumerate(self.loadfile(filename)):
           if i%100==0:
             user, product, rating, _ = line.split('::')
             self.trainset.setdefault(user, {})
-            self.trainset[user][product] = int(rating)
-
+            self.trainset[user][product] = float(rating)/5
 
     def calc_user_sim(self):
         '''计算相似用户'''
-        # build inverse table for item-users
-        # key=productID, value=list of userIDs who have seen this product
-        print ('building product-users inverse table...', file=sys.stderr)
         '''定义一个倒排字典 p-u'''
         product2users = dict()
         for user, products in self.trainset.items():
@@ -53,11 +45,11 @@ class UserBasedCF(object):
                 if product not in product2users:
                     product2users[product] = set()
                 product2users[product].add(user)
-                '''计算产品受欢迎程度---用户群对改产品的行为次数'''
-                if product not in self.product_popular:
-                    self.product_popular[product] = 0
-                self.product_popular[product] += 1
-        print ('build product-users inverse table succ', file=sys.stderr)
+                # '''计算产品受欢迎程度---用户群对改产品的行为次数'''
+                # if product not in self.product_popular:
+                #     self.product_popular[product] = 0
+                # self.product_popular[product] += 1
+
 
         '''产品数量'''
         self.product_count = len(product2users)
@@ -65,33 +57,26 @@ class UserBasedCF(object):
 
         '''用户倒排矩阵'''
         usersim_mat = self.user_sim_mat
-        print ('building user co-rated products matrix...', file=sys.stderr)
-
         for product, users in product2users.items():
             for u in users:
                 usersim_mat.setdefault(u, defaultdict(int))
                 for v in users:
                     if u == v:
                         continue
-                    usersim_mat[u][v] += 1
-        print ('build user co-rated products matrix succ', file=sys.stderr)
-        '''计算用户相似矩阵'''
-        print ('calculating user similarity matrix...', file=sys.stderr)
-        simfactor_count = 0
-        PRINT_STEP = 2000000
+                    usersim_mat[u][v] += self.trainset[u][product]
+                    usersim_mat[u][v] += self.trainset[v][product]
 
         for u, related_users in usersim_mat.items():
             for v, count in related_users.items():
-                usersim_mat[u][v] = count / math.sqrt(len(self.trainset[u]) * len(self.trainset[v]))
 
-                simfactor_count += 1
-                if simfactor_count % PRINT_STEP == 0:
-                    print ('calculating user similarity factor(%d)' %simfactor_count, file=sys.stderr)
+                # usersim_mat[u][v] = count / math.sqrt(len(self.trainset[u]) * len(self.trainset[v]))
 
-        print ('calculate user similarity matrix(similarity factor) succ',file=sys.stderr)
-        print ('Total similarity factor number = %d' %simfactor_count, file=sys.stderr)
-
-
+                usersim_mat[u][v] = count / np.linalg.norm(np.array(list(self.trainset[u].values()))) * np.linalg.norm(np.array(list(self.trainset[v].values())))
+                if  usersim_mat[u][v] >self.max_point:
+                    self.max_point =  usersim_mat[u][v]
+                if  usersim_mat[u][v] <self.min_point:
+                    self.min_point = usersim_mat[u][v]
+        print(self.max_point,self.min_point)
     def recommend(self, user):
         ''' 寻找k个相似用户，推荐n个产品 '''
         K = self.n_sim_user
@@ -111,10 +96,8 @@ class UserBasedCF(object):
                     continue
                 '''否则计算相似用户中，该产品的累积得分，相似用户中大多购买过该产品，则有理由相信当前用户对该物品兴趣大'''
                 rank.setdefault(product, 0)
-                rank[product] += similarity_factor
-        # print('根据用户相似推荐10个产品：')
-        # print(sorted(rank.items(), key=itemgetter(1), reverse=True)[0:N])
 
+                rank[product] += ((similarity_factor-self.min_point)/(self.max_point-self.min_point))*self.trainset[similar_user][product]
         return sorted(rank.items(), key=itemgetter(1), reverse=True)[0:N]
 
     def evaluate(self):
@@ -153,13 +136,12 @@ class UserBasedCF(object):
         print ('precision=%.4f\trecall=%.4f\tcoverage=%.4f\tpopularity=%.4f' %
                (precision, recall, coverage, popularity), file=sys.stderr)
 
-
 if __name__ == '__main__':
     ratingfile = os.path.join('ml-1m', 'ratings.dat')
     usercf = UserBasedCF()
     usercf.generate_dataset(ratingfile)
     usercf.calc_user_sim()
-    usercf.evaluate()
+    # usercf.evaluate()
 
     '''预测或推荐'''
 
