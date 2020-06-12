@@ -10,7 +10,6 @@ if __name__ == '__main__':
 
 
     model = tree.DecisionTreeClassifier(
-
                                     criterion='entropy'
                                     ,random_state=30
                                     ,splitter='random'
