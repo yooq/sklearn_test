@@ -79,7 +79,7 @@ for i in sort_miss_num:
     model =RandomForestRegressor(random_state=2,n_estimators=10)
     model.fit(X_train,y_lable_trian)
     y_lable_test_ = model.predict(X_test)
-    print('mmmmmmmmmmmmmmmmmm',df_miss.iloc[:,i].isnull())
+    print('m',df_miss.iloc[:,i].isnull())
     df_miss.loc[df_miss.iloc[:,i].isnull(),i]=y_lable_test_    #布尔索引用loc
 
 

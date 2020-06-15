@@ -12,8 +12,6 @@ if __name__ == '__main__':
 
     X_train,X_test,Y_train,Y_test = train_test_split(data.data,data.target,test_size=0.3)
 
-
-
     model_rand = RandomForestClassifier(n_estimators=5,random_state=2,oob_score=True)  #oob  (out of bag)是指，在构建随机森林的时候，其实只有百分之62左右的数据被拿去训练了，剩下没有去训练的数据就是袋外数据，可以直接作为测试集
 
     # 如果使用袋外数据集，那么，训练的时候就不需要切分数据及
@@ -35,7 +33,3 @@ if __name__ == '__main__':
     # print(score)
     #
 
-
-'''
-回归
-'''

@@ -45,7 +45,6 @@ F,p = f_classif(x,y) #处理离散标签数据，用作分类。
 F,p = f_regression(x,y) #处理连续型数据，用作回归。
 
 # 往往都是先根据P值，然后保留与y相关性高的特征,共有多少个，以便确定k值
-
 select = SelectKBest(f_classif,k=??)
 
 
@@ -58,7 +57,7 @@ select = SelectKBest(mutual_info_classif,K=？？？)
 
 
 
-# 嵌入法
+#           嵌入法
 
 # 对       逻辑回归            效过不错
 # 原理：模型反复的训练和调整。
@@ -82,7 +81,8 @@ for i in k:
 
 
 
-# 包装法，综合了统计法和嵌入法 ，对   支持向量机    有奇效
+# 包装法，
+# 综合了统计法和嵌入法 ，对   支持向量机    有奇效
 from sklearn.feature_selection import RFE
 RCF_ = RCF(n_estimators=10,random_state=2) #基础模型
 x_features_ = RFE(RCF_,n_features_to_select=340,step=50).fit(x,y) #transform后返回特征。。。保留340个特征，每次迭代减少50个特征

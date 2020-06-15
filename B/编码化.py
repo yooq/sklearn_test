@@ -4,7 +4,7 @@ list_name=[['赤'],['橙'],['黄']]
 
 labelencoder = LabelEncoder()
 list_enconder = labelencoder.fit_transform(list_name)
-print(list_enconder)
+print(list_enconder)  #[1 0 2]
 
 
 l =['吃撑','黄绿','青蓝紫']

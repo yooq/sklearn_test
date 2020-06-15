@@ -8,11 +8,10 @@ PCA（主成分分析）：
 
 
 
-
 SVD（特征值分解）：
     SVD是一种强大的降维工具，同时也用于去噪，或图片压缩，本质上SVD是使用奇异值分解
-
 '''
+
 
 from sklearn.decomposition import PCA,TruncatedSVD
 from sklearn.datasets import load_iris
@@ -22,6 +21,7 @@ import matplotlib.pyplot as plt
 data = load_iris()
 X = data.data
 Y = data.target
+print(X.shape)
 
 pca = PCA(n_components=2) #n_components 表示维度，可以根据 pca.explained_variance_ratio_ 对元数据信息占比来选择合适的值
 #***************************************#
@@ -30,11 +30,11 @@ pca = PCA(n_components=0.97,svd_solver='full') #至少保留元数据信息的97
 # svd_slover--[randomized（适合巨大矩阵,效果好于full）,full（完整的SVD，数据量小好用）,auto(自行选择用哪种),arpack(使用稀疏矩阵)]
 
 #***************************************#
-pca.components_
+
 
 
 X_features = pca.fit_transform(X)
-print(X_features)
+
 
 # plt.figure()
 # colors =['red','black','orange']
@@ -43,9 +43,9 @@ print(X_features)
 # plt.legend()
 # plt.show()
 
-print(pca.explained_variance_) #查看每一位方差
-print(pca.explained_variance_ratio_) #新特征每个维度所保留元数据信息量占比，返回[0,1]
-print(pca.explained_variance_ratio_.sum()) #即为新数据保留元数据信息占比
-
-
+print('variance_',pca.explained_variance_) #查看每一位方差
+print('ratio',pca.explained_variance_ratio_) #新特征每个维度所保留元数据信息量占比，返回[0,1]
+print('sum',pca.explained_variance_ratio_.sum()) #即为新数据保留元数据信息占比
+print('****************************')
+print('com',pca.components_)  # U,S,V = SVD  奇异值分解后的V矩阵
 
