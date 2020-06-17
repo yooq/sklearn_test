@@ -10,7 +10,7 @@ import matplotlib
 # china = load_sample_image('china.jpg')
 
 
-china = matplotlib.image.imread('02.jpg')
+china = matplotlib.image.imread('01.jpg')
 l,w,c = tuple(china.shape)
 
 plt.figure()

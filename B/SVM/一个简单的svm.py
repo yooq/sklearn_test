@@ -6,7 +6,6 @@ import numpy as np
 
 X,Y = make_blobs(n_samples=50,centers=2,random_state=0,cluster_std=0.6)
 
-
 '''决策边界可视化'''
 
 def plot_svc_decision_funtion(model,X,Y,s,ax=None):
@@ -45,7 +44,7 @@ def plot_svc_decision_funtion(model,X,Y,s,ax=None):
 
 
 #模型
-model_svc = SVC(kernel='linear').fit(X,Y)
+model_svc = SVC(kernel='linear',C=0.5).fit(X,Y)  #  C 软间隔参数，C越大越靠近硬间隔，默认为1，取值[0,)
 
 plot_svc_decision_funtion(model_svc,X=X,Y=Y,s=50)
 

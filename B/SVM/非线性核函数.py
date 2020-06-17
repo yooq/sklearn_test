@@ -6,6 +6,7 @@ sigmoid :   双曲正切核          ---非线性
 rbf     :   高斯核             ----非线性
 '''
 
+
 from sklearn.datasets import  make_circles
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ import numpy as np
 
 X,Y = make_circles(100,factor=0.1,noise=0.1)
 
-model_scv = SVC(kernel='rbf').fit(X,Y)
+model_scv = SVC(kernel='rbf',C=50).fit(X,Y)
 
 '''决策边界可视化'''
 
