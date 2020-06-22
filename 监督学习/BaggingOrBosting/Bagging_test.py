@@ -8,7 +8,8 @@ from sklearn import tree
 X, y = make_classification(n_samples=100, n_features=4,
                            n_informative=4, n_redundant=0,
                            random_state=0, n_classes=4,shuffle=False)
-clf_svm = BaggingClassifier(base_estimator=KNeighborsClassifier(),
+
+clf_svm = BaggingClassifier(base_estimator=SVC(),
                         n_estimators=10, random_state=0).fit(X, y)
 
 clf_knn = BaggingClassifier(base_estimator=KNeighborsClassifier(),
